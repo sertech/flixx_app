@@ -243,6 +243,57 @@ function displayBackgroundImage(type, backgroundPath) {
     }
 }
 
+// display slider movies
+async function displaySlider() {
+    const { results } = await fetchAPIData('movie/now_playing');
+    console.log(results);
+
+    results.forEach((movie) => {
+        const div = document.createElement('div');
+        div.classList.add('swiper-slide');
+        div.innerHTML = `
+            <a href="movie-details.html?${movie.id}">
+                <img
+                    src="https://image.tmdb.org/t/p/w500${movie.poster_path}"
+                    alt="${movie.title}"
+                />
+            </a>
+            <h4 class="swiper-rating">
+                <i class="fas fa-star text-secondary"></i> ${movie.vote_average} / 10
+            </h4>
+        `;
+
+        document.querySelector('.swiper-wrapper').appendChild(div);
+
+        initSwiper();
+    });
+}
+
+// swiper documentation https://swiperjs.com/swiper-api
+function initSwiper() {
+    const swiper = new Swiper('.swiper', {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        freeMode: true,
+        loop: true,
+        autoplay: {
+            delay: 4000,
+            disabledOmInteraction: false,
+        },
+        breakpoints: {
+            500: {
+                slidesPerView: 2,
+            },
+            700: {
+                slidesPerView: 3,
+            },
+            1200: {
+                slidesPerView: 4,
+            },
+        },
+    });
+}
+
 // fetch data from TMDB API
 async function fetchAPIData(endpoint) {
     const API_KEY = '0e97928887ec91c394e75fc9c3ddeb43';
@@ -286,6 +337,7 @@ function init() {
         case '/':
         case '/index.html':
             console.log('home');
+            displaySlider();
             displayPopularMovies();
             break;
         case '/shows.html':
